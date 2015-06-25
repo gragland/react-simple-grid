@@ -1,5 +1,5 @@
 var React = require('react');
-var Radium = require('radium');
+var Util = require('./utilities.js');
 
 var Row = require('./grid-row.jsx');
 var Block = require('./grid-block.jsx');
@@ -66,19 +66,18 @@ var GridComponent = React.createClass({
       );
     }
 
+    var style = styles.container;
+    if (this.props.hideOuterSpacing)
+      style = Util.mergeObjects(style, styles.containerHideOuterSpacing);
+
   	return (
-      <div style={[
-          styles.container,
-          this.props.hideOuterSpacing && styles.containerHideOuterSpacing
-        ]}>
-
-       {rowNodes}
-
-      </div>
+        <div className="react-simple-grid" style={style}>
+         {rowNodes}
+        </div>
   	);
 	
   }
 });
 
 
-module.exports = Radium(GridComponent); 
+module.exports = GridComponent; 

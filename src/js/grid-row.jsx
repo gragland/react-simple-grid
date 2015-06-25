@@ -1,5 +1,5 @@
 var React = require('react');
-var Radium = require('radium');
+var Util = require('./utilities.js');
 
 var Row = React.createClass({
 
@@ -11,7 +11,10 @@ var Row = React.createClass({
         width: '100%',
         marginBottom: (this.props.spacing) + 'px',
         paddingLeft: (this.props.spacing/2) + 'px', // Half spacing because child blocks also have left/right padding
-        paddingRight: (this.props.spacing/2) + 'px'
+        paddingRight: (this.props.spacing/2) + 'px',
+        'boxSizing': 'border-box',
+        'WebkitBoxSizing': 'border-box',
+        'MozBoxSizing': 'border-box'
       },
       rowLast: {
         marginBottom: 0
@@ -31,20 +34,21 @@ var Row = React.createClass({
       }
     };
 
+    var rowStyle = styles.row;
+    if (this.props.isLastRow)
+      rowStyle = Util.mergeObjects(rowStyle, styles.rowLast);
+    if (this.props.hideGutters)
+      rowStyle = Util.mergeObjects(rowStyle, styles.rowHideGutters);
+
     return (
-      <div className="row"
-        style={[ 
-          styles.row,
-          this.props.isLastRow && styles.rowLast,
-          this.props.hideGutters && styles.rowHideGutters
-        ]}>
+      <div className="row" style={rowStyle}>
 
           {this.props.children}
 
-          <div style={[ styles.clearfix ]} />
+          <div style={styles.clearfix} />
       </div>
     );
   }
 });
 
-module.exports = Radium(Row);
+module.exports = Row;

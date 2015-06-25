@@ -14,7 +14,7 @@ var DemoComponent = React.createClass({
 	    return {
 	      instagramClientId: '02d26cb819954ba7b5c3c072a885759f',
 	      instagramCount: 28,
-	      instagramUserId: 478987666
+	      instagramUserId: 75
 	    };
 	},
 
@@ -36,26 +36,33 @@ var DemoComponent = React.createClass({
 		      return result;
 		    });
 
-		    this.setState(newData);
+		    this.setState({data:newData});
 
 		}.bind(this));
 	},
 
 	render: function(){
 
-		var imageNodes = this.state.data.map(function(result){
-	      return (
-	      	 <img src={result.image}>
+		var imageNodes = this.state.data.map(function(result, i){
+	      return ( 	
+	      	 <img src={result.image} style={{ display: 'block', width: '100%' }} key={i}/>
 	      );
 	    }.bind(this));
 
     	return (
+
       		<div>
-      			{imageNodes.length &&
-			    	<GridComponent blocksPerRow={4} blockSpacing={1} hideOuterSpacing={true}>
+      			{imageNodes.length >= 1 &&
+			    	<GridComponent blocksPerRow={4} blockSpacing={5} hideOuterSpacing={true}>
 			    		{imageNodes}
 			    	</GridComponent>
 		    	}
+
+		    	{imageNodes.length === 0 &&
+		    		<div style={{ fontSize: '32px', margin: '20px'}}>
+		    			Loading ...
+		    		</div>
+		    	}	
       		</div>
    		);
   	}

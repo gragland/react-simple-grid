@@ -9,7 +9,10 @@ var Block = React.createClass({
       float: 'left',
       width: this.props.width,
       paddingLeft: (this.props.spacing / 2 ) + 'px',
-      paddingRight: (this.props.spacing / 2 ) + 'px'
+      paddingRight: (this.props.spacing / 2 ) + 'px',
+      boxSizing: 'border-box',
+      WebkitBoxSizing: 'border-box',
+      MozBoxSizing: 'border-box'
     };
 
     return (

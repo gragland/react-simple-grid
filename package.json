@@ -1,13 +1,12 @@
 {
   "name": "react-simple-grid",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Simple react grid component",
   "main": "src/js/grid.jsx",
   "peerDependencies": {
     "react": ">=0.12.0"
   },
   "devDependencies": {
-    "radium": "latest",
     "babelify": "~6.0.2",
     "browserify": "latest",
     "clean-css": "latest",
@@ -38,11 +37,12 @@
     ]
   },
   "scripts": {
-    "bundle": "npm run bundle-js",
+    "bundle": "npm run bundle-js & npm run bundle-js-example",
     "bundle-js": "browserify src/js/grid.jsx --transform babelify --global-transform [ uglifyify --no-sourcemap --compress [ --drop_console --unused --dead_code ] ] --outfile build/js/bundle.js",
-    "git-add-bundle": "git add build/*",
+    "bundle-js-example": "browserify examples/grid/js/app.js --transform babelify --global-transform [ uglifyify --no-sourcemap --compress [ --drop_console --unused --dead_code ] ] --outfile examples/grid/js/bundle.js",
+    "watch": "npm run watch-js & npm run watch-js-example",
     "watch-js": "watchify src/js/grid.jsx --transform babelify --outfile build/js/bundle.js -v",
-    "watch": "npm run watch-js",
+    "watch-js-example": "watchify examples/grid/js/app.js --transform babelify --outfile examples/grid/js/bundle.js -v",
     "prepublish": "npm run bundle"
   }
 }
