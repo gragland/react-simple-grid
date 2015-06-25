@@ -1,0 +1,48 @@
+{
+  "name": "react-simple-grid",
+  "version": "1.0.0",
+  "description": "Simple react grid component",
+  "main": "src/js/grid.jsx",
+  "peerDependencies": {
+    "react": ">=0.12.0"
+  },
+  "devDependencies": {
+    "radium": "latest",
+    "babelify": "~6.0.2",
+    "browserify": "latest",
+    "clean-css": "latest",
+    "nodemon": "latest",
+    "reactify": "^1.1.1",
+    "uglifyify": "latest",
+    "watchify": "~3.1.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/gragland/react-simple-grid.git"
+  },
+  "author": "Gabe Ragland <gabe.ragland@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gragland/react-simple-grid/issues"
+  },
+  "keywords": [
+    "grid",
+    "gallery",
+    "react",
+    "react-component"
+  ],
+  "homepage": "https://github.com/gragland/react-simple-grid",
+  "browserify": {
+    "transform": [
+      "reactify"
+    ]
+  },
+  "scripts": {
+    "bundle": "npm run bundle-js",
+    "bundle-js": "browserify src/js/grid.jsx --transform babelify --global-transform [ uglifyify --no-sourcemap --compress [ --drop_console --unused --dead_code ] ] --outfile build/js/bundle.js",
+    "git-add-bundle": "git add build/*",
+    "watch-js": "watchify src/js/grid.jsx --transform babelify --outfile build/js/bundle.js -v",
+    "watch": "npm run watch-js",
+    "prepublish": "npm run bundle"
+  }
+}
