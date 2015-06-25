@@ -5,7 +5,7 @@ Simple React component that allows you to layout child elements (or components) 
 `npm install react-simple-grid`
 
 ## Demo
-`coming soon`
+<a href="http://gragland.github.io/react-simple-grid/examples/grid/">http://gragland.github.io/react-simple-grid/examples/grid</a>
 
 ## Props
 
