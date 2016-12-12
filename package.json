@@ -1,19 +1,23 @@
 {
   "name": "react-simple-grid",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Simple react grid component",
-  "main": "src/js/grid.jsx",
+  "main": "lib/grid.js",
+  "scripts": {
+    "build": "npm run build-library && npm run build-script",
+    "build-library": "NODE_ENV=production TYPE=library webpack --config webpack.config.js",
+    "build-script": "NODE_ENV=production TYPE=script webpack --config webpack.config.js",
+    "prepublish": "npm run build"
+  },
   "peerDependencies": {
-    "react": ">=0.12.0"
+    "react": ">=0.12.0 <16.0.0"
   },
   "devDependencies": {
-    "babelify": "~6.0.2",
-    "browserify": "latest",
-    "clean-css": "latest",
-    "nodemon": "latest",
-    "reactify": "^1.1.1",
-    "uglifyify": "latest",
-    "watchify": "~3.1.2"
+    "babel-core": "6.18.2",
+    "babel-loader": "6.2.8",
+    "babel-preset-es2015": "6.18.0",
+    "babel-preset-react": "6.16.0",
+    "webpack": "1.13.3"
   },
   "repository": {
     "type": "git",
@@ -30,19 +34,5 @@
     "react",
     "react-component"
   ],
-  "homepage": "https://github.com/gragland/react-simple-grid",
-  "browserify": {
-    "transform": [
-      "reactify"
-    ]
-  },
-  "scripts": {
-    "bundle": "npm run bundle-js & npm run bundle-js-example",
-    "bundle-js": "browserify src/js/grid.jsx --transform babelify --global-transform [ uglifyify --no-sourcemap --compress [ --drop_console --unused --dead_code ] ] --outfile build/js/bundle.js",
-    "bundle-js-example": "browserify examples/grid/js/app.js --transform babelify --global-transform [ uglifyify --no-sourcemap --compress [ --drop_console --unused --dead_code ] ] --outfile examples/grid/js/bundle.js",
-    "watch": "npm run watch-js & npm run watch-js-example",
-    "watch-js": "watchify src/js/grid.jsx --transform babelify --outfile build/js/bundle.js -v",
-    "watch-js-example": "watchify examples/grid/js/app.js --transform babelify --outfile examples/grid/js/bundle.js -v",
-    "prepublish": "npm run bundle"
-  }
+  "homepage": "https://github.com/gragland/react-simple-grid"
 }
