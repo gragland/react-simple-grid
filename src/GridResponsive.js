@@ -74,7 +74,7 @@ class GridResponsive extends React.PureComponent {
 
   gridWidth(){
     const gridWidthPx = elementWidth(this.el);
-    console.log(`[GRID] Grid Width: ${gridWidthPx}`);
+    //console.log(`[GRID] Grid Width: ${gridWidthPx}`);
 
     this.setState({ gridWidthPx: gridWidthPx });
   }

@@ -25,6 +25,13 @@ export function nextHighestNumber(arr, num, returnEqual, returnLast, prop){
 }
 
 /**
+ * From http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
+ */
+export function isArray(o) {
+  return Object.prototype.toString.call(o) === '[object Array]';
+}
+
+/**
  * Shallow merge two objects
  * We're just merging style objects so no need for object-assign ponyfill
  */

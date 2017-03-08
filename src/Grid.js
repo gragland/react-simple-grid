@@ -1,7 +1,7 @@
 import React from 'react';
 import Row from './GridRow.js';
 import Block from './GridBlock.js';
-import { merge } from './util.js';
+import { merge, isArray } from './util.js';
 
 class Grid extends React.PureComponent {
 
@@ -52,15 +52,28 @@ class Grid extends React.PureComponent {
     // This will be overridden by an individual <Block width> if specified
     let blockWidthFromProps = blockWidth || 1/blocksPerRow;
 
-    // Normally into an array of widths ([1/4] or [1/4,1/2,1/4])
-    const blockWidthArray = setupBlockWidthArray(blockWidthFromProps);
+    // Normalize value into an array of percentages
+    let blockWidthArray = (isArray(blockWidthFromProps) ? blockWidthFromProps : [blockWidthFromProps]);
+    blockWidthArray =  blockWidthArray.map(w => w*100 );
+
+    const blockWidthIterator = {
+      index: 0,
+      widths: blockWidthArray,
+      next: function(){
+        const width = this.widths[this.index];
+        this.index = (this.widths[this.index+1] ? this.index+1 : 0);
+        return width;
+      }
+    }
 
     /**** BUILD OUR <ROWS> OF <BLOCKS> ****/
 
-    let rowNodes = [];
-    let rowInProgress = [];
-    let rowInProgressWidth = 0;
-    let bwaIndex = 0;
+    const rowNodes = [];
+
+    const rowInProgress = {
+      blocks: [],
+      totalWidth: 0
+    }
 
     // Filter out null children such as {/*...*/}
     const validChildren = children.filter(child => child);
@@ -75,10 +88,8 @@ class Grid extends React.PureComponent {
         key: `block-${child.key || i}`
       };
 
-      // Get the next blockWidth from our array of widths
-      let blockWidth = blockWidthArray[ bwaIndex ];
-      // Once we get to the end of blockWidthArray then start back at 0
-      bwaIndex = (blockWidthArray[bwaIndex+1] ? bwaIndex+1 : 0);
+      // Get the next blockWidth
+      let blockWidth = blockWidthIterator.next();
 
       // If child is a <Block> then we use its width and children props
       if (child.type === Block){
@@ -91,16 +102,16 @@ class Grid extends React.PureComponent {
 
       // If we've gone over 100% width for our rowInProgress ...
       // Make the current <Block> width smaller so that we're at 100% exactly
-      let amountOver = rowInProgressWidth - 100;
+      let amountOver = rowInProgress.totalWidth - 100;
       if (amountOver > 0){
         block.width = block.width - amountOver;
       }
 
       // Add to our row array
-      rowInProgress.push(block);
+      rowInProgress.blocks.push(block);
 
       // Total width of current row
-      rowInProgressWidth += block.width;
+      rowInProgress.totalWidth += block.width;
 
       // See if it's the last block so we can push a final row
       let isLastBlock = (i === validChildren.length-1);
@@ -108,7 +119,7 @@ class Grid extends React.PureComponent {
       // If the <Row> we are preparing is full then push it!
       // Or if we're on the last <Block> push an unfinished row
       // Round up since row might be 99.9999...
-      if (rowInProgressWidth.toFixed(2) >= 100 || isLastBlock){
+      if (rowInProgress.totalWidth.toFixed(2) >= 100 || isLastBlock){
         rowNodes.push(
           <Row 
             spacing={spacing} 
@@ -116,11 +127,11 @@ class Grid extends React.PureComponent {
             hideGutters={hideOuterSpacing}
             key={`row-${rowNodes.length}`}>
 
-              {rowInProgress.map((block) => (
+              {rowInProgress.blocks.map((block) => (
                 <Block
                   spacing={block.spacing} 
                   width={block.width}
-                  widthPx={this.computeBlockWidthPx(block, rowInProgress.length)}
+                  widthPx={this.computeBlockWidthPx(block, rowInProgress.blocks.length)}
                   key={block.key}> 
                     {block.children}
                 </Block>
@@ -130,8 +141,8 @@ class Grid extends React.PureComponent {
         );
 
         // Reset to prepare a new <Row>
-        rowInProgress = [];
-        rowInProgressWidth = 0;
+        rowInProgress.blocks = [];
+        rowInProgress.totalWidth = 0;
       }
 
     });
@@ -152,19 +163,6 @@ class Grid extends React.PureComponent {
   }
 };
 
-// Setup an array of block widths to iterate through
-function setupBlockWidthArray(blockWidth){
-  // Normalize value into an array of numbers 
-  let pattern = (isArray(blockWidth) ? blockWidth : [blockWidth]);
-  // Turn width values from fraction (1/4) to percent (25)
-  return pattern.map(w => w*100 );
-}
-
-// From http://perfectionkills.com/instanceof-considered-harmful-or-how-to-write-a-robust-isarray/
-function isArray(o) {
-  return Object.prototype.toString.call(o) === '[object Array]';
-}
-
 Grid.propTypes = {
   blocksPerRow: React.PropTypes.number,
   spacing: React.PropTypes.number,
@@ -172,32 +170,21 @@ Grid.propTypes = {
   children: (props) => {
     const { children } = props;
 
-    // Get all children that are <Block> components
+    // Get children that are <Block> components
     const blocks = children.filter(child => (child && child.type === Block));
 
-    // Throw error if some children are <Blocks> but not all
     if (blocks.length && blocks.length !== children.length){
       throw new Error("<Grid> children must all be <Blocks> (or none should and we'll wrap them in <Blocks> for you). It's all or nothing!");
     }
 
-    // Get all <Blocks> that have a width specified
-    // Also add up total width of all <Blocks>
-    let totalWidth = 0;
+    // Get <Blocks> that have a width specified
     const blocksWithWidth = blocks.filter((child) => {
-      totalWidth += child.props.width;
       return (child.props.width > 0);
     });
 
-    // All <Blocks> should have a width specified or none of them should
     if (blocksWithWidth.length && blocksWithWidth.length !== blocks.length){
       throw new Error("You must specify a width for all <Block> components (or for none of them and it will be divided evenly)");
     }
-
-    // Make sure total width of <Blocks> add up to 100 or is 0 (none specified)
-    /*
-    if (totalWidth !== 100 && totalWidth !== 0){
-      throw new Error("Total width of all <Block> components must equal 100 (or 0 and it will be divided evenly)");
-    }*/
 
     return null;
   }
